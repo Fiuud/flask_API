@@ -6,24 +6,16 @@ from sqlalchemy.orm import sessionmaker
 import uuid
 
 import os
-# from dotenv import load_dotenv
-#
-# load_dotenv()
+from dotenv import load_dotenv
+load_dotenv()
 
-HOST = 'localhost'
-USER = 'postgres'
-PSW = 'admin'
-DB = 'cepu_qr'
-
-# HOST = os.getenv('HOST')
-# USER = os.getenv('USER')
-# PSW = os.getenv('PSW')
-# DB = os.getenv('DB')
+HOST = os.getenv('HOST')
+USER = os.getenv('USER')
+PSW = os.getenv('PSW')
+DB = os.getenv('DB')
 
 db_url = f"postgresql+psycopg2://{USER}:{PSW}@{HOST}/{DB}"
-# db_url = f"postgresql//{USER}:{PSW}@{HOST}/{DB}"
-db = create_engine(db_url, echo=True)
-# db = create_engine(db_url)
+db = create_engine(db_url, echo=False)
 base = declarative_base()
 
 
@@ -78,7 +70,7 @@ class Event(base):
     summaryId = Column(UUID(as_uuid=True), ForeignKey("class.id"))
 
     def __repr__(self):
-        return f'<Room: "{self.location}", Time: "{self.start}" - "{self.end}", Id: "{self.id}">'
+        return f'<Room: "{self.location}", Time: "{self.start}" - "{self.end}">'
 
 
 class Class(base):
@@ -88,7 +80,7 @@ class Class(base):
     name = Column(VARCHAR, nullable=False)
 
     def __repr__(self):
-        return f'<Lesson: "{self.name}">'
+        return f'<Class: "{self.name}">'
 
 
 Session = sessionmaker(db)

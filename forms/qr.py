@@ -8,17 +8,13 @@ from databases.extension import session, Student, VisitList, Event, Class
 
 # Запись присутствия студента
 def check():
-    # if not request.json \
-    #         or not ('qr_data' in request.json) \
-    #         or not ('lecture_room' in request.json):
-    #     abort(400)
+    if not request.json \
+            or not ('qr_data' in request.json) \
+            or not ('lecture_room' in request.json):
+        abort(400)
 
-    # qr_data = request.json["qr_data"]
-    qr_data = "106769220227267884323|XgDtxv9gDYyHEMiWPA6V9Rg1dlELXYxVdARYpe" \
-              "bdbY/SlWQsXS20br5o+XjLCDPOvc6ur4C2BKhhEeJ48SyIXWnrpHQnjn15o6P8+5u" \
-              "ISMpl97P3WnOXFtvzI9J/V8bC2qxZRpyupDfzIJCCw77xbp5lFtQY/WLBPGwrbghkwJM="
-    # lecture_room = request.json["lecture_room"]
-    lecture_room = 236
+    qr_data = request.json["qr_data"]
+    lecture_room = request.json["lecture_room"]
 
     google_id = qr_data[:qr_data.find("|")]
     encrypted_qr_time = base64.b64decode(qr_data[qr_data.find("|") + 1:])
@@ -39,6 +35,7 @@ def check():
         '13:10': '14:40',
         '14:50': '16:20',
         '16:30': '18:00'}
+
     lesson_start_time = ''
     for start, end in time_list.items():
         start_timestamp = int(
@@ -67,8 +64,8 @@ def check():
                 session.add(add_in_list)
                 session.commit()
                 status = "success"
-            # else:
-            #     status = "neutral"
+            else:
+                status = "neutral"
 
         if not in_visit_list:
             add_in_list = VisitList(student.id, visit_time, event[0].id)

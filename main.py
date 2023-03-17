@@ -16,8 +16,7 @@ app.add_url_rule('/test', view_func=test.test)
 app.add_url_rule('/student/add', methods=['POST'], view_func=student.add)
 
 # Сканирование QR-кода
-# app.add_url_rule('/check/qr', methods=['POST'], view_func=security.auth.login_required(qr.check))
-app.add_url_rule('/check/qr', view_func=qr.check)
+app.add_url_rule('/check/qr', methods=['POST'], view_func=security.auth.login_required(qr.check))
 
 # Update server
 # app.add_url_rule('/git_update', methods=['POST'], view_func=ci.webhook)
