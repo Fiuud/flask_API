@@ -55,7 +55,7 @@ def check():
     # fisrt() для имитации того, что отмечаемся на единственной паре (по разделению на чис. и знам.)
 
     if (current_time - decrypted_qr_time) < 35:
-        visit_time = current_time
+        visit_time = int(current_time)
         in_visit_list = session.query(VisitList).filter_by(student_id=student.id).all()
         if in_visit_list:
             in_visit_list = in_visit_list[0] if len(in_visit_list) == 1 else in_visit_list[-1]
@@ -67,7 +67,7 @@ def check():
             else:
                 status = "neutral"
 
-        if not in_visit_list:
+        else:
             add_in_list = VisitList(student.id, visit_time, event[0].id)
             session.add(add_in_list)
             session.commit()

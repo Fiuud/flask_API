@@ -25,6 +25,7 @@ class VisitList(base):
     id = Column(Integer, primary_key=True)
     student_id = Column(Integer, ForeignKey('student.id'))
     visit_time = Column(Integer, nullable=False)
+
     event_id = Column(UUID(as_uuid=True), ForeignKey('event.id'))
 
     def __init__(self, student_id, visit_time, event_id):
