@@ -1,9 +1,7 @@
 from flask import Flask
 from config.config import Config
 from app.extensions import init_db, shutdown_session as shutdown
-# import locale
 
-# locale.setlocale(locale.LC_ALL, '')
 
 # инициализация Flask приложения и SQLAlchemy
 app = Flask(__name__, template_folder='../app/templates')

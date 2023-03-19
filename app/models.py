@@ -1,25 +1,7 @@
-from sqlalchemy import (Column, Integer, VARCHAR, Text, ForeignKey, DateTime, SmallInteger, Boolean, ARRAY)
-from app.extensions import base
+from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, DateTime, SmallInteger, Boolean, ARRAY, TIMESTAMP
+from app.extensions import base, engine
 from sqlalchemy.dialects.postgresql import UUID, JSON
 import uuid
-
-
-class Visit(base):
-    __tablename__ = 'visit'
-
-    id = Column(Integer, primary_key=True)
-    studentId = Column(Integer, ForeignKey('student.id'))
-    visitTime = Column(Integer, nullable=False)
-
-    eventId = Column(UUID(as_uuid=True), ForeignKey('event.id'))
-
-    def __init__(self, student_id, visit_time, event_id):
-        self.studentId = student_id
-        self.visitTime = visit_time
-        self.eventId = event_id
-
-    def __repr__(self):
-        return f'<StudentID: "{self.studentId}", VisitTime: "{self.visitIime}", Event: "{self.eventId}">'
 
 
 class Student(base):
@@ -41,6 +23,24 @@ class Student(base):
 
     def __repr__(self):
         return f'<Student: "{self.displayName}", Email: "{self.email}">'
+
+
+class Visit(base):
+    __tablename__ = 'visit'
+
+    id = Column(Integer, primary_key=True)
+    visitTime = Column(TIMESTAMP, nullable=False)
+
+    studentId = Column(Integer, ForeignKey('student.id'))
+    eventId = Column(UUID(as_uuid=True), ForeignKey('event.id'))
+
+    def __init__(self, student_id, visit_time, event_id):
+        self.studentId = student_id
+        self.visitTime = visit_time
+        self.eventId = event_id
+
+    def __repr__(self):
+        return f'<StudentID: "{self.studentId}", VisitTime: "{self.visitTime}", Event: "{self.eventId}">'
 
 
 class Event(base):
@@ -67,3 +67,34 @@ class Class(base):
 
     def __repr__(self):
         return f'<Class: "{self.name}">'
+
+
+class Teacher(base):
+    __tablename__ = 'teacher'
+
+    id = Column(UUID(as_uuid=True), primary_key=True)
+    name = Column(VARCHAR)
+
+    def __repr__(self):
+        return f'<ID: "{self.id}", Teacher: "{self.name}">'
+
+
+class TeacherAuth(base):
+    __tablename__ = 'teacherAuth'
+
+    id = Column(Integer, primary_key=True)
+    email = Column(VARCHAR(50))
+    password = Column(VARCHAR(250))
+
+    teacher_id = Column(UUID(as_uuid=True), ForeignKey('teacher.id'))
+
+    def __init__(self, email, password, teacher_id):
+        self.email = email
+        self.password = password
+        self.teacher_id = teacher_id
+
+    def __repr__(self):
+        return f'<Email: "{self.email}", TeacherId: "{self.teacher_id}">'
+
+
+base.metadata.create_all(bind=engine)
