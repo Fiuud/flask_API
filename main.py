@@ -3,6 +3,7 @@ from forms import home, student, qr, errors, security, test
 import locale
 
 app = Flask(__name__, template_folder='templates')
+app.secret_key = 'super secret key 1234'
 # locale.setlocale(locale.LC_ALL, '')
 app.config['JSON_AS_ASCII'] = False
 
@@ -10,7 +11,7 @@ app.config['JSON_AS_ASCII'] = False
 app.add_url_rule('/test', view_func=test.test)
 
 # Главная страница
-# app.add_url_rule('/', view_func=home.index)
+app.add_url_rule('/', view_func=home.index)
 
 # Добавления нового пользователя
 app.add_url_rule('/student/add', methods=['POST'], view_func=student.add)

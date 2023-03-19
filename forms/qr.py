@@ -3,7 +3,7 @@ import datetime
 import base64
 import time
 import rsa
-from databases.extension import session, Student, VisitList, Event, Class
+from databases.extension import session, Student, Visit, Event, Class
 
 
 # Запись присутствия студента
@@ -23,6 +23,7 @@ def check():
     private_key = rsa.PrivateKey.load_pkcs1(student.private_key)
 
     decrypted_qr_time = int((rsa.decrypt(encrypted_qr_time, private_key)).decode())
+    print(decrypted_qr_time)
     current_time = time.time()
     qr_weekday = time.strftime('%A', time.localtime(decrypted_qr_time))[:2].upper()
     today = datetime.datetime.fromtimestamp(current_time)
@@ -46,8 +47,8 @@ def check():
             lesson_start_time = start
             print(lesson_start_time)
             break
-        else:
-            return jsonify({"status": "failure"})
+    else:
+        return jsonify({"status": "failure"})
 
     event = session.query(Event, Class).filter(Event.summaryId == Class.id, Event.location.contains(lecture_room),
                                                Event.start.contains(lesson_start_time),
@@ -56,11 +57,11 @@ def check():
 
     if (current_time - decrypted_qr_time) < 35:
         visit_time = int(current_time)
-        in_visit_list = session.query(VisitList).filter_by(student_id=student.id).all()
+        in_visit_list = session.query(Visit).filter_by(student_id=student.id).all()
         if in_visit_list:
             in_visit_list = in_visit_list[0] if len(in_visit_list) == 1 else in_visit_list[-1]
             if (current_time - in_visit_list.visit_time) > 30:
-                add_in_list = VisitList(student.id, visit_time, event[0].id)
+                add_in_list = Visit(student.id, visit_time, event[0].id)
                 session.add(add_in_list)
                 session.commit()
                 status = "success"
@@ -68,7 +69,7 @@ def check():
                 status = "neutral"
 
         else:
-            add_in_list = VisitList(student.id, visit_time, event[0].id)
+            add_in_list = Visit(student.id, visit_time, event[0].id)
             session.add(add_in_list)
             session.commit()
             status = "success"

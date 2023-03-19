@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, DateTime, SmallInteger, Boolean, ARRAY
+from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, DateTime, SmallInteger, Boolean, ARRAY, TIMESTAMP
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.dialects.postgresql import UUID, JSON
 from sqlalchemy.orm import sessionmaker
@@ -19,12 +19,40 @@ db = create_engine(db_url, echo=False)
 base = declarative_base()
 
 
-class VisitList(base):
-    __tablename__ = 'visitList'
+class Teacher(base):
+    __tablename__ = 'teacher'
+
+    id = Column(UUID(as_uuid=True), primary_key=True)
+    name = Column(VARCHAR)
+
+    def __repr__(self):
+        return f'<ID: "{self.id}", Teacher: "{self.name}">'
+
+
+class TeacherAuth(base):
+    __tablename__ = 'teacherAuth'
+
+    id = Column(Integer, primary_key=True)
+    email = Column(VARCHAR(50))
+    password = Column(VARCHAR)
+
+    teacher_id = Column(UUID(as_uuid=True), ForeignKey('teacher.id'))
+
+    def __init__(self, email, password, teacher_id):
+        self.email = email
+        self.password = password
+        self.teacher_id = teacher_id
+
+    def __repr__(self):
+        return f'<Email: "{self.email}", TeacherId: "{self.teacher_id}">'
+
+
+class Visit(base):
+    __tablename__ = 'visit'
 
     id = Column(Integer, primary_key=True)
     student_id = Column(Integer, ForeignKey('student.id'))
-    visit_time = Column(Integer, nullable=False)
+    visit_time = Column(TIMESTAMP, nullable=False)
 
     event_id = Column(UUID(as_uuid=True), ForeignKey('event.id'))
 
@@ -71,7 +99,7 @@ class Event(base):
     summaryId = Column(UUID(as_uuid=True), ForeignKey("class.id"))
 
     def __repr__(self):
-        return f'<Room: "{self.location}", Time: "{self.start}" - "{self.end}">'
+        return f'<ID "{self.id}" Room: "{self.location}", Time: "{self.start}" - "{self.end}">'
 
 
 class Class(base):
