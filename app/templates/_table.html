@@ -1,0 +1,11 @@
+<turbo-frame id="sorting_table">
+    {% for visit, student, event in visits %}
+        <tr>
+            <td>{{ student.displayName }}</td>
+
+            <td class="tx-right tx-medium tx-inverse">
+                {{ visit.visitTime.strftime("%H:%M") }}
+            </td>
+        </tr>
+    {% endfor %}
+</turbo-frame>

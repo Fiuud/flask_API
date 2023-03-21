@@ -1,0 +1,13 @@
+<turbo-frame id="sorting_status">
+    {% if request.args.get('date') and visits %}
+        <span class="tx-12 text-muted mb-3 ">
+                            {% for month in months %}
+                                {% if loop.index == request.args.get('date')[5:7].replace('0', '')|int %}
+                                    {{ month }} {{ request.args.get('date')[8:].replace('0', '') }}
+                                {% endif %}
+                            {% endfor %}
+            -  {{ visits[0][2].start[24:29] }} | {{ visits[0][2].location.replace(', КИПУ', '') }} кабинет  </span>
+    {% else %}
+        <span class="tx-12 text-muted mb-3 "> Не отсортировано </span>
+    {% endif %}
+</turbo-frame>

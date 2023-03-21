@@ -1,11 +1,9 @@
-from flask import render_template, request, jsonify
-import datetime
-import time
+from flask import render_template, request
 from app.extensions import db_session
-from app.models import Visit, Event, Class, Student, Teacher
+from app.models import Visit, Event, Student
 from app.controllers import TeacherController, EventController
-import calendar
-import locale
+from app import turbo
+import datetime
 
 
 def index():
@@ -15,11 +13,13 @@ def index():
     teacher_name = TeacherController.get_teacher(session_id).name  # Имя преподователя
     teacher_lessons = EventController.get_event(teacher_name=teacher_name)  # Список пар преподователя
 
-    locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
-    calendar_months = list(calendar.month_name)[1:]
-    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+    calendar_months = [
+        'Январь', 'Февраль', 'Март',
+        'Апрель', 'Май', 'Июнь',
+        'Июль', 'Август', 'Сентябрь',
+        'Октябрь', 'Ноябрь', 'Декабрь'
+    ]
 
-    print(calendar_months)
     if request.args.get('event_id') and request.args.get('date'):
         event_id = request.args.get('event_id')
         date = datetime.datetime.strptime(request.args.get('date'), "%Y-%m-%d")
@@ -35,4 +35,11 @@ def index():
             Visit.eventId == Event.id,
             Visit.visitTime.between(start_time, end_time)
         ).order_by(Visit.visitTime).all()
+        if turbo.can_stream():  # обновления {%include ___ %} блоков кода без перезагрузки страницы
+            return turbo.stream([
+                turbo.update(
+                    render_template('_sorting.html', visits=visits), target='sorting_status'),
+                turbo.update(
+                    render_template('_table.html', visits=visits), target='sorting_table')
+            ])
     return render_template('index.html', teacher_lessons=teacher_lessons, visits=visits, months=calendar_months)

@@ -37,6 +37,8 @@
     <!---Skinmodes css-->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/skin-modes.css') }}">
 
+    {{ turbo() }}
+
     <style>
         .alert-error {
             background-color: red;
@@ -69,16 +71,14 @@
                     <img src="{{ url_for('static', filename='img/brand/favicon-white.png') }}"
                          class="desktop-logo-dark">
                 </a>
-{#                <div class="main-header-center  ml-4">#}
-{#                    <input class="form-control" placeholder="Search for anything..." type="search">#}
-{#                    <button class="btn"><i class="fe fe-search"></i></button>#}
-{#                </div>#}
+                {#                <div class="main-header-center  ml-4">#}
+                {#                    <input class="form-control" placeholder="Search for anything..." type="search">#}
+                {#                    <button class="btn"><i class="fe fe-search"></i></button>#}
+                {#                </div>#}
             </div><!-- search -->
             <div class="main-header-right">
 
                 <div class="nav nav-item  navbar-nav-right ml-auto">
-
-
 
 
                     <div class="dropdown main-profile-menu nav nav-item nav-link">
@@ -101,116 +101,101 @@
                             <a class="dropdown-item" href="page-signin.html"><i class="bx bx-log-out"></i> Sign Out</a>
                         </div>
                     </div>
-{#                    <div class="dropdown main-header-message right-toggle">#}
-{#                        <a class="nav-link pr-0" data-toggle="sidebar-right" data-target=".sidebar-right">#}
-{#                            <svg xmlns="http://www.w3.org/2000/svg" class="header-icon-svgs" viewBox="0 0 24 24"#}
-{#                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"#}
-{#                                 stroke-linejoin="round">#}
-{#                                <line x1="3" y1="12" x2="21" y2="12"></line>#}
-{#                                <line x1="3" y1="6" x2="21" y2="6"></line>#}
-{#                                <line x1="3" y1="18" x2="21" y2="18"></line>#}
-{#                            </svg>#}
-{#                        </a>#}
-{#                    </div>#}
+                    {#                    <div class="dropdown main-header-message right-toggle">#}
+                    {#                        <a class="nav-link pr-0" data-toggle="sidebar-right" data-target=".sidebar-right">#}
+                    {#                            <svg xmlns="http://www.w3.org/2000/svg" class="header-icon-svgs" viewBox="0 0 24 24"#}
+                    {#                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"#}
+                    {#                                 stroke-linejoin="round">#}
+                    {#                                <line x1="3" y1="12" x2="21" y2="12"></line>#}
+                    {#                                <line x1="3" y1="6" x2="21" y2="6"></line>#}
+                    {#                                <line x1="3" y1="18" x2="21" y2="18"></line>#}
+                    {#                            </svg>#}
+                    {#                        </a>#}
+                    {#                    </div>#}
                 </div>
             </div>
         </div>
     </div>
     <!-- /main-header -->
-
     <!-- main-content opened -->
     <div class="main-content horizontal-content">
+        <turbo-frame id="all">
 
-        <!-- container opened -->
-        <div class="container">
+            <!-- container opened -->
+            <div class="container">
 
-            <!-- breadcrumb -->
-            <div class="breadcrumb-header justify-content-between">
-                <div class="left-content">
-                    <div>
-                        <h2 class="main-content-title tx-24 mg-b-1 mg-b-lg-1">Посещаемость</h2>
-                    </div>
-                </div>
-            </div>
-            <!-- /breadcrumb -->
-
-            <!-- row opened -->
-            <div class="row row-sm">
-                <div class="col-md-12 col-lg-4 col-xl-4">
-                    <div class="card card-dashboard-eight pb-2">
-                        <h6 class="card-title">Сортировка</h6>
-                        <form method="GET">
-                            <div class="form-group">
-                                <span class="d-block mg-b-10 text-muted tx-12">Дата:</span>
-                                <input type="date" class="form-control" id="exampleInputEmail1" name="date"
-                                       aria-describedby="emailHelp" value="{{ request.args.get('date') }}"
-                                       placeholder="Enter email" required>
-                            </div>
-                            <div class="form-group">
-                                <span class="d-block mg-b-10 text-muted tx-12">Дисциплина:</span>
-                                <select class="form-control" id="exampleFormControlSelect1" name="event_id">
-                                    {% for event, class in teacher_lessons %}
-                                        {% if event.id|string == request.args.get('event_id') %}
-                                            <option value="{{ event.id }}" selected> {{ class.name }} | {{ event.start[24:29] }}</option>
-                                        {% else %}
-                                            <option value="{{ event.id }}"> {{ class.name }} | {{ event.start[24:29] }}</option>
-                                        {% endif %}
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <p></p>
-                            <button type="submit" class="btn btn-primary w-100">Найти</button>
-                            <p></p>
-                        </form>
-                    </div>
-                </div>
-                <div class="col-md-12 col-lg-8 col-xl-8">
-                    <div class="card card-table-two">
-                        <div class="d-flex justify-content-between">
-                            <h4 class="card-title mb-1">Список студентов</h4>
+                <!-- breadcrumb -->
+                <div class="breadcrumb-header justify-content-between">
+                    <div class="left-content">
+                        <div>
+                            <h2 class="main-content-title tx-24 mg-b-1 mg-b-lg-1">Посещаемость</h2>
                         </div>
-                    <p></p>
+                    </div>
+                </div>
+                <!-- /breadcrumb -->
 
-                        {% if request.args.get('date') and visits %}
-                            <span class="tx-12 text-muted mb-3 ">
-                            {% for month in months %}
-                                {% if loop.index == request.args.get('date')[5:7].replace('0', '')|int %}
-                                    {{ month }} {{ request.args.get('date')[8:].replace('0', '') }}
-                                {% endif %}
-                            {% endfor %}
-                                -  {{ visits[0][2].start[24:29] }} | {{ visits[0][2].location.replace(', КИПУ', '') }} кабинет  </span>
-                        {% else %}
-                            <span class="tx-12 text-muted mb-3 "> Не отсортировано </span>
-                        {% endif %}
+                <!-- row opened -->
+                <div class="row row-sm">
+                    <div class="col-md-12 col-lg-4 col-xl-4">
+                        <div class="card card-dashboard-eight pb-2">
+                            <h6 class="card-title">Сортировка</h6>
+                            <form method="GET">
+                                <div class="form-group">
+                                    <span class="d-block mg-b-10 text-muted tx-12">Дата:</span>
+                                    <input type="date" class="form-control" id="exampleInputEmail1" name="date"
+                                           aria-describedby="emailHelp" value="{{ request.args.get('date') }}"
+                                           placeholder="Enter email" required>
+                                </div>
+                                <div class="form-group">
+                                    <span class="d-block mg-b-10 text-muted tx-12">Дисциплина:</span>
+                                    <select class="form-control" id="exampleFormControlSelect1" name="event_id">
+                                        {% for event, class in teacher_lessons %}
+                                            {% if event.id|string == request.args.get('event_id') %}
+                                                <option value="{{ event.id }}" selected> {{ class.name }}
+                                                    | {{ event.start[24:29] }}</option>
+                                            {% else %}
+                                                <option value="{{ event.id }}"> {{ class.name }}
+                                                    | {{ event.start[24:29] }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <p></p>
+                                <button type="submit" class="btn btn-primary w-100">Найти</button>
+                                <p></p>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-8 col-xl-8">
+                        <div class="card card-table-two">
+                            <div class="d-flex justify-content-between">
+                                <h4 class="card-title mb-1">Список студентов</h4>
+                            </div>
+                            <p></p>
 
-                        <div class="table-responsive country-table">
-                            <table class="table table-striped table-bordered
+                            {% include '_sorting.html' %}
+
+                            <div class="table-responsive country-table">
+                                <table class="table table-striped table-bordered
 									mb-0 text-sm-nowrap text-lg-nowrap text-xl-nowrap table_sort">
-                                <thead>
-                                <tr>
-                                    <th class="wd-lg-25p">ФИО</th>
-                                    <th class="wd-lg-25p tx-right">Время сканирования</th>
-                                </tr>
-                                </thead>
-
-                                <tbody>
-                                {% for visit, student, event in visits %}
+                                    <thead>
                                     <tr>
-                                        <td>{{ student.displayName }}</td>
-
-                                        <td class="tx-right tx-medium tx-inverse">
-                                            {{ visit.visitTime.strftime("%H:%M") }}
-                                        </td>
+                                        <th class="wd-lg-25p">ФИО</th>
+                                        <th class="wd-lg-25p tx-right">Время сканирования</th>
                                     </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
+                                    </thead>
+
+                                    <tbody>
+                                    {% include '_table.html' %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <!-- /row -->
             </div>
-            <!-- /row -->
-        </div>
+        </turbo-frame>
     </div>
     <!-- Container closed -->
 
