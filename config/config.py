@@ -1,10 +1,9 @@
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
+from config import constants
 
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
     JSON_AS_ASCII = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = constants.SQLALCHEMY_DATABASE_URI
+    JWT_SECRET_KEY = constants.JWT_SECRET_KEY
+    SECRET_KEY = constants.SECRET_KEY

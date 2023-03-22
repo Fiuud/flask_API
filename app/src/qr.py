@@ -4,6 +4,7 @@ import datetime
 import base64
 
 from flask import jsonify, abort
+from flask_jwt_extended import get_jwt_identity
 
 from sqlalchemy import cast, func, JSON
 
@@ -36,29 +37,20 @@ def get_lesson_start_time(current_time: float, decrypted_qr_time: int):
 
 
 def qr_validate(request):
-    if not request \
-            or 'qr_data' not in request \
-            or 'audience' not in request \
-            or 'weekType' not in request \
-            or request['weekType'] not in [0, 1, 2]:
+    if not request or 'qr_data' not in request:
         abort(400)
 
-    week_types = ['both', 'numerator', 'denominator']
+    jwt_data = get_jwt_identity()
+    audience = jwt_data["audience"]
+    week_type = ['both', 'numerator', 'denominator'][jwt_data["weekType"]]
 
-    audience = request["audience"]
-    week_type = week_types[request["weekType"]]
-
-    data = request["qr_data"].split("|")
-    google_id = data[0]
-    encrypted_qr_time = base64.b64decode(data[1])
+    google_id, encrypted_qr_time = request["qr_data"].split("|")
 
     student = StudentController.get_student(student_google_id=google_id)
-
     private_key = rsa.PrivateKey.load_pkcs1(student.privateKey)
-    decrypted_qr_time = int((rsa.decrypt(encrypted_qr_time, private_key)).decode())
+    decrypted_qr_time = int((rsa.decrypt(base64.b64decode(encrypted_qr_time), private_key)).decode())
 
     qr_weekday = time.strftime('%A', time.localtime(decrypted_qr_time))[:2].upper()
-    print(qr_weekday)
     current_time = time.time()
 
     if not (lesson_start_time := get_lesson_start_time(current_time, decrypted_qr_time)):
