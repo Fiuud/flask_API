@@ -52,11 +52,12 @@ class Event(base):
     start = Column(Text)
     end = Column(Text)
     recurrence = Column(ARRAY(Text))
+    extendedProperties = Column(Text)
 
     summaryId = Column(UUID(as_uuid=True), ForeignKey("class.id"))
 
     def __repr__(self):
-        return f'<Room: "{self.location}", Time: "{self.start}" - "{self.end}">'
+        return f'<Room: "{self.location.replace(", КИПУ", "")}", Time: "{self.start[24:29]}", WeekDay: "{self.recurrence[0][35:37]}">'
 
 
 class Class(base):

@@ -1,11 +1,15 @@
-from flask import jsonify, abort
 import rsa
 import time
 import datetime
 import base64
+
+from flask import jsonify, abort
+
+from sqlalchemy import cast, func, JSON
+
 from app.controllers import StudentController, VisitController
 from app.extensions import db_session
-from app.models import Event, Class, Student
+from app.models import Event, Class
 
 
 def get_lesson_start_time(current_time: float, decrypted_qr_time: int):
@@ -32,12 +36,19 @@ def get_lesson_start_time(current_time: float, decrypted_qr_time: int):
 
 
 def qr_validate(request):
-    if not request or 'qr_data' not in request or 'audience' not in request:
+    if not request \
+            or 'qr_data' not in request \
+            or 'audience' not in request \
+            or 'weekType' not in request \
+            or request['weekType'] not in [0, 1, 2]:
         abort(400)
 
-    data = request["qr_data"].split("|")
-    audience = request["audience"]
+    week_types = ['both', 'numerator', 'denominator']
 
+    audience = request["audience"]
+    week_type = week_types[request["weekType"]]
+
+    data = request["qr_data"].split("|")
     google_id = data[0]
     encrypted_qr_time = base64.b64decode(data[1])
 
@@ -53,13 +64,16 @@ def qr_validate(request):
     if not (lesson_start_time := get_lesson_start_time(current_time, decrypted_qr_time)):
         return jsonify({'status': 'failure'})
 
-    event = db_session.query(Event, Class).filter(Event.summaryId == Class.id, Event.location.contains(audience),
-                                                  Event.start.contains(lesson_start_time),
-                                                  Event.recurrence[1].like(f'%BYDAY={qr_weekday}%')).all()
+    event = db_session.query(Event, Class).filter(
+        Event.summaryId == Class.id,
+        Event.location.like(f'%{audience}%'),
+        func.substring(func.json_extract_path_text(cast(Event.start, JSON), 'dateTime'), 12, 5) == lesson_start_time,
+        Event.recurrence[1].contains(f'BYDAY={qr_weekday}'),
+        func.json_extract_path_text(cast(Event.extendedProperties, JSON), 'shared', 'weekType') == week_type
+    ).all()
 
-    print(len(list(event)))
-    print(list(event)[0])
-    # fisrt() для имитации того, что отмечаемся на единственной паре (по разделению на чис. и знам.)
+    print(len(event))
+    event = event[0]
 
     if (current_time - decrypted_qr_time) < 35:
         visit_time = int(current_time)
