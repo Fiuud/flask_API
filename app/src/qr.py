@@ -6,11 +6,11 @@ import base64
 from flask import jsonify, abort
 from flask_jwt_extended import get_jwt_identity
 
-from sqlalchemy import cast, func, JSON
+from sqlalchemy import cast, func, JSON, DATE
 
 from app.controllers import StudentController, VisitController
 from app.extensions import db_session
-from app.models import Event, Class
+from app.models import Event, Class, Student, Visit
 
 
 def get_lesson_start_time(current_time: float, decrypted_qr_time: int):
@@ -39,7 +39,6 @@ def get_lesson_start_time(current_time: float, decrypted_qr_time: int):
 def qr_validate(request):
     if not request or 'qr_data' not in request:
         abort(400)
-
     jwt_data = get_jwt_identity()
     audience = jwt_data["audience"]
     week_type = ['both', 'numerator', 'denominator'][jwt_data["weekType"]]
@@ -68,20 +67,15 @@ def qr_validate(request):
     event = event[0]
 
     if (current_time - decrypted_qr_time) < 35:
-        visit_time = int(current_time)
-        in_visit_list = VisitController.get_visit(student.id)
-        if in_visit_list:
-            in_visit_list = in_visit_list[0] if len(in_visit_list) == 1 else in_visit_list[-1]
-            if (current_time - in_visit_list.visit_time) > 30:
-                VisitController.create_visit(student.id, visit_time, event[0].id)
-                status = "success"
-            else:
-                status = "neutral"
+        visit_time = datetime.datetime.fromtimestamp(current_time)
 
-        else:
+        in_visit_list = db_session.query(Visit).filter(
+            Visit.studentId == student.id,
+            Visit.eventId == event.id,
+            cast(Visit.visitTime, DATE) == visit_time.date()
+        ).first()
+        if not in_visit_list:
             VisitController.create_visit(student.id, visit_time, event[0].id)
-            status = "success"
-    else:
-        status = "failure"
-
-    return jsonify({'status': status})
+            return jsonify({"status": "created"}), 201
+        return jsonify({"status": "already in list"})
+    return jsonify({"status": "expired time"})
