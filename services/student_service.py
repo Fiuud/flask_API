@@ -1,6 +1,6 @@
 from flask import jsonify, abort
 
-from app.controllers import StudentController
+from models.controllers import StudentController
 
 
 def create_student(request):

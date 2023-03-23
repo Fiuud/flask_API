@@ -1,5 +1,5 @@
-from app.models import Event, Class
-from app.extensions import db_session
+from models import Event, Class
+from extensions.database_extension import db_session
 
 
 class EventController:
@@ -14,15 +14,3 @@ class EventController:
         if teacher_name:
             return db_session.query(Event, Class).filter(Event.summaryId == Class.id,
                                                          Event.description.like(f"%{teacher_name}%")).all()
-
-    @staticmethod
-    def create_event():
-        return NotImplemented
-
-    @staticmethod
-    def update_event():
-        return NotImplemented
-
-    @staticmethod
-    def delete_event():
-        return NotImplemented

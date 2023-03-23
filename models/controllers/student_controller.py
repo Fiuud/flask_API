@@ -1,5 +1,5 @@
-from app.models import Student
-from app.extensions import db_session
+from models import Student
+from extensions.database_extension import db_session
 import rsa
 
 

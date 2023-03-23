@@ -8,9 +8,9 @@ from flask_jwt_extended import get_jwt_identity
 
 from sqlalchemy import cast, func, JSON, DATE
 
-from app.controllers import StudentController, VisitController
-from app.extensions import db_session
-from app.models import Event, Class, Visit
+from models.controllers import StudentController, VisitController
+from extensions.database_extension import db_session
+from models import Event, Class, Visit
 
 
 def get_lesson_start_time(current_time: float, decrypted_qr_time: int):

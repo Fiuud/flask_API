@@ -1,5 +1,0 @@
-from app.controllers.student_controller import StudentController
-from app.controllers.visit_controller import VisitController
-from app.controllers.teacher_controller import TeacherController
-from app.controllers.event_controller import EventController
-

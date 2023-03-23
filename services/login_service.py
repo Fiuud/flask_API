@@ -3,9 +3,9 @@ from datetime import timedelta
 from flask import jsonify, abort
 from flask_jwt_extended import create_access_token
 
-from app.extensions import db_session
-from app.models import Event
-from config.constants import AUDIENCE_PASS
+from extensions.database_extension import db_session
+from models import Event
+from config import Config
 
 
 def scanner_login(request):
@@ -16,7 +16,8 @@ def scanner_login(request):
 
     audience, password = request.values()
 
-    if not db_session.query(Event).filter(Event.location.like(f'%{audience}%')) and not password == AUDIENCE_PASS:
+    if not db_session.query(Event).filter(
+            Event.location.like(f'%{audience}%')) and not password == Config.AUDIENCE_PASS:
         return jsonify({'message': 'Неверные учетные данные'}), 401
 
     # Создаём токен доуступа

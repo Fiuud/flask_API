@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from app.models import Visit, Student, Event
-from app.extensions import db_session
-import rsa
+from models import Visit, Student, Event
+from extensions.database_extension import db_session
 
 
 class VisitController:
@@ -20,11 +19,3 @@ class VisitController:
         db_session.add(visit)
         db_session.commit()
         return visit
-
-    @staticmethod
-    def update_visit():
-        return NotImplemented
-
-    @staticmethod
-    def delete_visit():
-        return NotImplemented

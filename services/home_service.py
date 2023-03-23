@@ -1,8 +1,8 @@
 from flask import render_template, request
-from app.extensions import db_session
-from app.models import Visit, Event, Student
-from app.controllers import TeacherController, EventController
-from app import turbo
+from extensions.database_extension import db_session
+from models import Visit, Event, Student
+from models.controllers import TeacherController, EventController
+from utils import turbo
 import datetime
 
 
