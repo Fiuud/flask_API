@@ -6,11 +6,11 @@ import base64
 from flask import jsonify, abort
 from flask_jwt_extended import get_jwt_identity
 
-from sqlalchemy import cast, func, JSON
+from sqlalchemy import cast, func, JSON, DATE
 
 from app.controllers import StudentController, VisitController
 from app.extensions import db_session
-from app.models import Event, Class
+from app.models import Event, Class, Visit
 
 
 def get_lesson_start_time(current_time: float, decrypted_qr_time: int):
@@ -36,22 +36,34 @@ def get_lesson_start_time(current_time: float, decrypted_qr_time: int):
         return False
 
 
+# TODO: написать функцию для получения типа недели
+def get_week_type():
+    ...
+
+
 def qr_validate(request):
     if not request or 'qr_data' not in request:
         abort(400)
-
+    try:
+        google_id, encrypted_qr_time = request["qr_data"].split("|")
+        int(google_id)
+    except ValueError:
+        print(request["qr_data"])
+        abort(400)
+        return jsonify()
+    print(request["qr_data"])
+    print(request["qr_data"].split("|"))
     jwt_data = get_jwt_identity()
     audience = jwt_data["audience"]
-    week_type = ['both', 'numerator', 'denominator'][jwt_data["weekType"]]
 
-    google_id, encrypted_qr_time = request["qr_data"].split("|")
+    current_time = time.time()
+    week_type = get_week_type()  # TODO: написать функцию для получения типа недели
 
     student = StudentController.get_student(student_google_id=google_id)
     private_key = rsa.PrivateKey.load_pkcs1(student.privateKey)
     decrypted_qr_time = int((rsa.decrypt(base64.b64decode(encrypted_qr_time), private_key)).decode())
 
     qr_weekday = time.strftime('%A', time.localtime(decrypted_qr_time))[:2].upper()
-    current_time = time.time()
 
     if not (lesson_start_time := get_lesson_start_time(current_time, decrypted_qr_time)):
         return jsonify({'status': 'failure'})
@@ -61,27 +73,27 @@ def qr_validate(request):
         Event.location.like(f'%{audience}%'),
         func.substring(func.json_extract_path_text(cast(Event.start, JSON), 'dateTime'), 12, 5) == lesson_start_time,
         Event.recurrence[1].contains(f'BYDAY={qr_weekday}'),
-        func.json_extract_path_text(cast(Event.extendedProperties, JSON), 'shared', 'weekType') == week_type
+        func.json_extract_path_text(cast(Event.extendedProperties, JSON), 'shared', 'weekType') == week_type,
+        func.json_extract_path_text(cast(Event.extendedProperties, JSON), 'shared', 'weekType') == 'both'
     ).all()
 
     print(len(event))
-    event = event[0]
 
-    if (current_time - decrypted_qr_time) < 35:
-        visit_time = int(current_time)
-        in_visit_list = VisitController.get_visit(student.id)
-        if in_visit_list:
-            in_visit_list = in_visit_list[0] if len(in_visit_list) == 1 else in_visit_list[-1]
-            if (current_time - in_visit_list.visit_time) > 30:
-                VisitController.create_visit(student.id, visit_time, event[0].id)
-                status = "success"
-            else:
-                status = "neutral"
-
-        else:
-            VisitController.create_visit(student.id, visit_time, event[0].id)
-            status = "success"
+    if not event:
+        return jsonify({"status": "event not started"})
     else:
-        status = "failure"
+        event = event[0]
+        print(event[0].id)
+    if (current_time - decrypted_qr_time) < 35:
+        visit_time = datetime.datetime.fromtimestamp(current_time)
 
-    return jsonify({'status': status})
+        in_visit_list = db_session.query(Visit).filter(
+            Visit.studentId == student.id,
+            Visit.eventId == event[0].id,
+            cast(Visit.visitTime, DATE) == visit_time.date()
+        ).first()
+        if not in_visit_list:
+            VisitController.create_visit(student.id, visit_time, event[0].id)
+            return jsonify({"status": "created"}), 201
+        return jsonify({"status": "already in list"})
+    return jsonify({"status": "expired time"})
