@@ -2,7 +2,7 @@ from flask import Blueprint, request
 
 from services import student_service
 
-student_route = Blueprint('student_route', __name__)
+student_route = Blueprint('student', __name__)
 
 
 # маршрут для создания нового Студента

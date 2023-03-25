@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required
 
 from services import qr_service
 
-qr_route = Blueprint('qr_route', __name__)
+qr_route = Blueprint('qr', __name__)
 
 
 # маршрут для обработки qr кода студента
