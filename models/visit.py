@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Integer, ForeignKey, TIMESTAMP
+import uuid
+
+from sqlalchemy import Column, ForeignKey, TIMESTAMP, text
 from extensions.database_extension import base
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -6,11 +8,11 @@ from sqlalchemy.dialects.postgresql import UUID
 class Visit(base):
     __tablename__ = 'visit'
 
-    id = Column(Integer, primary_key=True)
-    visitTime = Column(TIMESTAMP, nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("uuid_generate_v4()"))
 
-    studentId = Column(Integer, ForeignKey('student.id'))
-    eventId = Column(UUID(as_uuid=True), ForeignKey('event.id'))
+    studentId = Column(UUID(as_uuid=True), ForeignKey('student.id'), nullable=False)
+    eventId = Column(UUID(as_uuid=True), ForeignKey('event.id'), nullable=False)
+    visitTime = Column(TIMESTAMP, nullable=False)
 
     def __init__(self, student_id, visit_time, event_id):
         self.studentId = student_id
@@ -20,4 +22,4 @@ class Visit(base):
     def __repr__(self):
         return f'<StudentID: "{self.studentId}", ' \
                f'VisitTime: "{self.visitTime}",' \
-               f' Event: "{self.eventId}">'
+               f'Event: "{self.eventId}">'

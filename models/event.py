@@ -1,4 +1,4 @@
-from sqlalchemy import Column, VARCHAR, Text, ForeignKey, ARRAY
+from sqlalchemy import Column, VARCHAR, Text, ForeignKey, ARRAY, text
 from extensions.database_extension import base
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -7,7 +7,7 @@ import uuid
 class Event(base):
     __tablename__ = 'event'
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("uuid_generate_v4()"))
     location = Column(VARCHAR)
     description = Column(VARCHAR)
     start = Column(Text)

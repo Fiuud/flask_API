@@ -2,4 +2,5 @@ from models.controllers.student_controller import StudentController
 from models.controllers.visit_controller import VisitController
 from models.controllers.teacher_controller import TeacherController
 from models.controllers.event_controller import EventController
+from models.controllers.teacher_auth_controller import TeacherAuthController
 

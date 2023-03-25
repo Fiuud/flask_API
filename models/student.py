@@ -1,11 +1,13 @@
-from sqlalchemy import Column, Integer, Text
+import uuid
+
+from sqlalchemy import Column, Text, UUID, text
 from extensions.database_extension import base
 
 
 class Student(base):
     __tablename__ = 'student'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("uuid_generate_v4()"))
     email = Column(Text, nullable=False)
     displayName = Column(Text, nullable=False)
     googleId = Column(Text, nullable=False)
