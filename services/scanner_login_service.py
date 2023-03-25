@@ -9,15 +9,13 @@ from config import Config
 
 
 def scanner_login(request):
-    if not request \
-            or 'audience' not in request \
-            or 'password' not in request:
+    if not request or 'audience' not in request or 'password' not in request:
         abort(400)
 
     audience, password = request.values()
+    exist_audience = db_session.query(Event).filter(Event.location == f'{audience}, КИПУ').first()
 
-    if not db_session.query(Event).filter(
-            Event.location.like(f'%{audience}%')) and not password == Config.AUDIENCE_PASS:
+    if not exist_audience or str(password) != Config.AUDIENCE_PASS:
         return jsonify({'message': 'Неверные учетные данные'}), 401
 
     # Создаём токен доуступа

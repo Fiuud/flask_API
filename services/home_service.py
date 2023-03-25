@@ -1,17 +1,21 @@
 from flask import render_template, request
 from extensions.database_extension import db_session
-from models import Visit, Event, Student
+from models import Visit, Event, Student, Teacher
 from models.controllers import TeacherController, EventController
 from utils import turbo
 import datetime
 
 
-def index():
-    session_id = 'ed10ccd9-11a1-462b-b7e4-a7374eddf296'  # Получаем при логине преподавателя
+def index(current_user):
+    teacher_ids = db_session.query(Teacher).filter(
+        Teacher.name.like(f'%Абдураманов З.Ш%')
+    ).all()  # Получаем все id преподавателя сущности teacher
     visits = list()
 
-    teacher_name = TeacherController.get_teacher(session_id).name  # Имя преподователя
-    teacher_lessons = EventController.get_event(teacher_name=teacher_name)  # Список пар преподователя
+    teacher_lessons = []
+    for i in teacher_ids:
+        teacher_lessons += EventController.get_event(teacher_name=i.name)  # Список пар преподователя
+    print(teacher_lessons)
 
     calendar_months = [
         'Январь', 'Февраль', 'Март',
@@ -42,4 +46,5 @@ def index():
                 turbo.update(
                     render_template('_table.html', visits=visits), target='sorting_table')
             ])
-    return render_template('index.html', teacher_lessons=teacher_lessons, visits=visits, months=calendar_months)
+    return render_template('index.html', teacher_lessons=teacher_lessons, visits=visits, months=calendar_months,
+                           user=current_user)

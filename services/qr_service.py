@@ -57,7 +57,7 @@ def qr_validate(request):
     audience = jwt_data["audience"]
 
     current_time = time.time()
-    week_type = get_week_type()  # TODO: написать функцию для получения типа недели
+    week_type = get_week_type()
 
     student = StudentController.get_student(student_google_id=google_id)
     private_key = rsa.PrivateKey.load_pkcs1(student.privateKey)
@@ -70,10 +70,11 @@ def qr_validate(request):
 
     event = db_session.query(Event, Class).filter(
         Event.summaryId == Class.id,
-        Event.location.like(f'%{audience}%'),
+        Event.location == f'{audience}, КИПУ',
         func.substring(func.json_extract_path_text(cast(Event.start, JSON), 'dateTime'), 12, 5) == lesson_start_time,
         Event.recurrence[1].contains(f'BYDAY={qr_weekday}'),
         func.json_extract_path_text(cast(Event.extendedProperties, JSON), 'shared', 'weekType') == week_type,
+        # TODO: написать or
         func.json_extract_path_text(cast(Event.extendedProperties, JSON), 'shared', 'weekType') == 'both'
     ).all()
 
