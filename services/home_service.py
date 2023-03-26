@@ -1,14 +1,15 @@
 from flask import render_template, request
+from flask_login import current_user
 from extensions.database_extension import db_session
 from models import Visit, Event, Student, Teacher
-from models.controllers import TeacherController, EventController
+from models.controllers import EventController
 from utils import turbo
 import datetime
 
 
-def index(current_user):
+def index():
     teacher_ids = db_session.query(Teacher).filter(
-        Teacher.name.like(f'%Абдураманов З.Ш%')
+        Teacher.name.like(f'%{current_user.last_name} {current_user.first_name[0]}.{current_user.middle_name[0]}%')
     ).all()  # Получаем все id преподавателя сущности teacher
     visits = list()
 

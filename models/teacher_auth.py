@@ -27,4 +27,4 @@ class TeacherAuth(base, UserMixin):
         self.last_name = last_name
 
     def __repr__(self):
-        return f'<Email: "{self.email}", Teacher: "{self.first_name} {self.middle_name[0]}.{self.last_name[0]}.">'
+        return f'<Email: "{self.email}", Teacher: "{self.last_name} {self.first_name[0]}.{self.middle_name[0]}.">'

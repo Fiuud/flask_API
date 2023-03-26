@@ -2,7 +2,7 @@ from views.home import home_route
 from views.scanner_login import scanner_login_route
 from views.qr import qr_route
 from views.student import student_route
-from views.teacher_login import teacher_auth_route
+from views.teacher_auth import teacher_auth_route
 
 
 def register_routes(app):

@@ -1,29 +1,55 @@
-from flask import jsonify, redirect, url_for, request, flash, render_template, abort
-from flask_login import logout_user, login_user
+from flask import redirect, url_for, flash, render_template, jsonify
+from flask_login import logout_user, login_user, current_user
+from werkzeug.security import check_password_hash
 
-from extensions.database_extension import db_session
-from models import TeacherAuth
 from models.controllers import TeacherAuthController
+from utils import LoginForm
+from utils import RegisterForm
 
 
 def teacher_login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        remember = True if request.form.get('remember') else False
-        print(email, password, remember, request.form.get('remember'))
+    if current_user.is_authenticated:
+        return redirect(url_for('home.index'))
 
-        teacher_auth = TeacherAuthController.get_teacher_auth(email=email, password=password)
-        print(teacher_auth)
-        if teacher_auth:
+    form = LoginForm()
+    if form.validate_on_submit():
+
+        email = form.email.data
+        password = form.password.data
+        remember = form.remember.data
+        print(email, password, remember)
+
+        teacher_auth = TeacherAuthController.get_teacher_auth(email=email)
+
+        if teacher_auth and check_password_hash(teacher_auth.password_hash, password):
             login_user(teacher_auth, remember=remember)
             return redirect(url_for('home.index'))
         else:
-            flash('Неправильный логин или пароль', 'danger')
-            return redirect(url_for('teacher_auth.teacher_login'))
-    return render_template('auth/teacher_login.html')
+            flash('Неверный логин или пароль', 'danger')
+            return redirect(url_for('.teacher_login'))
+    return render_template('auth/teacher_login.html', form=form)
+
+
+def teacher_reg():
+    if current_user.is_authenticated:
+        return redirect(url_for('home.index'))
+
+    form = RegisterForm()
+    if form.validate_on_submit():
+        data = {
+            "email": form.email.data,
+            "password": form.password.data,
+            "last_name": form.last_name.data,
+            "first_name": form.first_name.data,
+            "middle_name": form.middle_name.data
+        }
+        TeacherAuthController.create_teacher_auth(data)
+        flash('Аккаунта успешно создан', 'success')
+        return redirect(url_for('.teacher_login'))
+    return render_template('auth/teacher_reg.html', form=form)
 
 
 def logout_teacher():
     logout_user()
+    flash('Вы вышли из аккаунта', 'success')
     return redirect(url_for('teacher_auth.teacher_login'))

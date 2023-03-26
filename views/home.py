@@ -10,4 +10,4 @@ home_route = Blueprint('home', __name__)
 @home_route.route('/')
 @login_required
 def index():
-    return home_service.index(current_user)
+    return home_service.index()

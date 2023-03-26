@@ -10,13 +10,9 @@ class TeacherAuthController:
         return db_session.query(TeacherAuth).all()
 
     @staticmethod
-    def get_teacher_auth(email, password=None) -> TeacherAuth:
+    def get_teacher_auth(email) -> TeacherAuth:
         teacher_auth = db_session.query(TeacherAuth).filter_by(email=email).first()
-
-        if password:
-            return teacher_auth if check_password_hash(teacher_auth.password_hash, password) else False
-        else:
-            return teacher_auth
+        return teacher_auth
 
     @staticmethod
     def update_teacher_auth(data: dict[str, str]) -> TeacherAuth:

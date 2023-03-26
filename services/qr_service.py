@@ -73,9 +73,8 @@ def qr_validate(request):
         Event.location == f'{audience}, КИПУ',
         func.substring(func.json_extract_path_text(cast(Event.start, JSON), 'dateTime'), 12, 5) == lesson_start_time,
         Event.recurrence[1].contains(f'BYDAY={qr_weekday}'),
-        func.json_extract_path_text(cast(Event.extendedProperties, JSON), 'shared', 'weekType') == week_type,
-        # TODO: написать or
-        func.json_extract_path_text(cast(Event.extendedProperties, JSON), 'shared', 'weekType') == 'both'
+        (func.json_extract_path_text(cast(Event.extendedProperties, JSON), 'shared', 'weekType') == week_type) | (
+                    func.json_extract_path_text(cast(Event.extendedProperties, JSON), 'shared', 'weekType') == 'both')
     ).all()
 
     print(len(event))

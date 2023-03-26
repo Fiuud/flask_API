@@ -11,13 +11,12 @@ def create_app():
 
     jwt.init_app(app)
     turbo.init_app(app)
-    init_db(app)
-
     login_manager.init_app(app)
-    login_manager.login_view = 'teacher_auth.teacher_login'
+
+    init_db(app)
+    register_routes(app)
 
     # will move to register_config soon
     # app.config['ERROR_404_HELP'] = False
 
-    register_routes(app)
     return app
