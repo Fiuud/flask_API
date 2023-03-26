@@ -49,12 +49,6 @@
     .form-group .invalid {
         border-color: #FF9898;
     }
-
-    {#.invalid::placeholder {#}
-    {#    color: #FF9898 !important;#}
-    {#    opacity: 1;#}
-    {
-    #}#}
 </style>
 <!-- Page -->
 <div class="page">
@@ -82,11 +76,6 @@
                                 <div class="card-sigin">
 
                                     <div class="mb-5 d-flex">
-                                        {#<a href="/">#}
-                                        {#                                        <img#}
-                                        {#                                                src="{{ url_for('static', filename='img/brand/favicon.png') }}"#}
-                                        {#                                                class="sign-favicon ht-40" alt="logo"></a>#}
-                                        {#                                        <h1 class="main-logo1 ml-1 mr-0 my-auto tx-28">Va<span>le</span>x</h1></div>#}
                                         <div class="card-sigin">
                                             {% with messages = get_flashed_messages(with_categories=true) %}
                                                 {% if messages %}
@@ -123,57 +112,11 @@
 
                                                         </div>
                                                     {% endfor %}
-
-{#                                                    <div class="form-group">#}
-{#                                                        {{ form.email.label }}#}
-{#                                                        {% if form.email.errors %}#}
-{#                                                            {% for e in form.email.errors %}#}
-{#                                                                <div data-mdb-delay="3000"#}
-{#                                                                     class="alert alert-danger text-center alert-dismissible fade show">#}
-{#                                                                    {{ e }}#}
-{#                                                                </div>#}
-{#                                                            {% endfor %}#}
-{#                                                            {{ form.email(class="form-control invalid", placeholder="Введите ваш email") }}#}
-{##}
-{#                                                        {% else %}#}
-{#                                                            {{ form.email(class="form-control", placeholder="Введите ваш email") }}#}
-{#                                                        {% endif %}#}
-{##}
-{#                                                    </div>#}
-{#                                                    <div class="form-group">#}
-{#                                                        {{ form.password.label }}#}
-{#                                                        {% if form.password.errors %}#}
-{#                                                            {% for e in form.password.errors %}#}
-{#                                                                <div data-mdb-delay="3000"#}
-{#                                                                     class="alert alert-danger text-center alert-dismissible fade show">#}
-{#                                                                    {{ e }}#}
-{#                                                                </div>#}
-{#                                                            {% endfor %}#}
-{#                                                            {{ form.password(class="form-control invalid", placeholder="Введите ваш пароль") }}#}
-{#                                                        {% else %}#}
-{#                                                            {{ form.password(class="form-control", placeholder="Введите ваш пароль") }}#}
-{#                                                        {% endif %}#}
-{##}
-{#                                                    </div>#}
-{#                                                    <div class="form-check">#}
-{#                                                        {{ form.remember(class="form-check-input") }}#}
-{#                                                        {{ form.remember.label(class="form-check-label") }}#}
-{#                                                    </div>#}
                                                     <p></p>
                                                     {{ form.submit(class="btn btn-main-primary btn-block") }}
-                                                    {#                                                    <button class="btn btn-main-primary btn-block">Войти</button>#}
-                                                    {#														<div class="row row-xs">#}
-                                                    {#															<div class="col-sm-6">#}
-                                                    {#																<button class="btn btn-block"><i class="fab fa-facebook-f"></i> Signup with Facebook</button>#}
-                                                    {#															</div>#}
-                                                    {#															<div class="col-sm-6 mg-t-10 mg-sm-t-0">#}
-                                                    {#																<button class="btn btn-info btn-block"><i class="fab fa-twitter"></i> Signup with Twitter</button>#}
-                                                    {#															</div>#}
-                                                    {#														</div>#}
                                                 </form>
                                                 <div class="main-signin-footer mt-5">
-                                                    <p><a href="">Забыли пароль?</a></p>
-                                                    <p>Нет аккаунта? <a href="page-signup.html">Создать аккаунт</a></p>
+                                                    <p>Уже есть аккаунта? <a href="login">Войти в систему</a></p>
                                                 </div>
                                             </div>
                                         </div>
