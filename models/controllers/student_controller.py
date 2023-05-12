@@ -1,6 +1,5 @@
 from models import Student
 from extensions.database_extension import db_session
-import rsa
 
 
 class StudentController:
@@ -17,16 +16,10 @@ class StudentController:
 
     @staticmethod
     def create_student(data: dict[str, str]) -> Student:
-        public_key, private_key = rsa.newkeys(1024)
-        public_key = public_key.save_pkcs1().decode('utf-8')
-        private_key = private_key.save_pkcs1().decode('utf-8')
-
         student = Student(
             email=data['email'],
             display_name=data['displayName'],
-            google_id=data['googleId'],
-            public_key=public_key,
-            private_key=private_key
+            google_id=data['googleId']
         )
         db_session.add(student)
         db_session.commit()

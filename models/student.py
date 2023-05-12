@@ -11,15 +11,11 @@ class Student(base):
     email = Column(Text, nullable=False)
     displayName = Column(Text, nullable=False)
     googleId = Column(Text, nullable=False)
-    publicKey = Column(Text, nullable=False)
-    privateKey = Column(Text, nullable=False)
 
-    def __init__(self, email, display_name, google_id, public_key, private_key):
+    def __init__(self, email, display_name, google_id):
         self.email = email
         self.displayName = display_name
         self.googleId = google_id
-        self.publicKey = public_key
-        self.privateKey = private_key
 
     def __repr__(self):
         return f'<Student: "{self.displayName}", ' \

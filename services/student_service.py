@@ -1,5 +1,6 @@
 from flask import jsonify, abort
 
+from config import Config
 from models.controllers import StudentController
 
 
@@ -14,5 +15,5 @@ def create_student(request):
     return jsonify({'email': student.email,
                     'displayName': student.displayName,
                     'googleId': student.googleId,
-                    'publicKey': student.publicKey,
-                    'photoUrl': request['photoUrl']}), 201
+                    'publicKey': Config.PUBLIC_KEY,
+                    'photoUrl': request['photoUrl']})

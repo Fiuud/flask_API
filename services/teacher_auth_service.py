@@ -17,7 +17,6 @@ def teacher_login():
         email = form.email.data
         password = form.password.data
         remember = form.remember.data
-        print(email, password, remember)
 
         teacher_auth = TeacherAuthController.get_teacher_auth(email=email)
 

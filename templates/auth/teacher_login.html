@@ -110,10 +110,10 @@
                                                                         {{ e }}
                                                                     </div>
                                                                 {% endfor %}
-                                                                {{ field(class="form-control invalid", placeholder="Введите ваш {}".format(field.description)) }}
+                                                                {{ field(class="form-control invalid", placeholder="{}".format(field.description)) }}
 
                                                             {% else %}
-                                                                {{ field(class="form-control", placeholder="Введите ваш {}".format(field.description)) }}
+                                                                {{ field(class="form-control", placeholder="{}".format(field.description)) }}
                                                             {% endif %}
 
                                                         </div>
